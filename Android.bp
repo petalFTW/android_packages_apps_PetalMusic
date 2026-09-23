@@ -1,0 +1,32 @@
+// PetalMusic — the petalOS music app ("Music").
+//
+// Built with Gradle (../PetalMusic in the maintainer tree) and shipped as a
+// prebuilt: the app is a Compose + Media3 + librespot project that isn't
+// expressible as a soong android_app{} without vendoring the whole Gradle
+// dependency graph. Soong re-signs it with the platform key, so the hidden-API
+// exemption BridgeFX needs is guaranteed by the build, not the input APK.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+android_app_import {
+    name: "PetalMusic",
+    owner: "rab1d",
+    apk: "prebuilt/app-release.apk",
+    certificate: "platform",
+    privileged: false,
+    dex_preopt: {
+        enabled: true,
+    },
+    // prefer the prebuilt if anything else ever claims the module name
+    prefer: true,
+}
+
+// This app replaces the AOSP/Lineage music player: Twelve is dropped from the
+// product packages in vendor/lineage/config/common_mobile_full.mk, so "Music"
+// is the only music app and therefore the default handler for audio.
+//
+// Runtime expectations:
+//   - BridgeFX (hardware/bridge) present for HAL-driven AutoMix. Without it the
+//     app falls back to internal volume-ramp transitions.
+//   - BridgeController (hardware/bridge/controller) is asked to defer while
+//     Music owns the effect (see ACTION_OWNER in that service).
