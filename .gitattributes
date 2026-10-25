@@ -1,0 +1,1 @@
+prebuilt/app-release.apk filter=lfs diff=lfs merge=lfs -text
